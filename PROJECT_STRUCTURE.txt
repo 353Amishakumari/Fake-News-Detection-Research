@@ -1,0 +1,34 @@
+Research project
+├── app.py
+├── train_baselines.py
+├── train_proposed.py
+├── run_evaluation.py
+├── requirements.txt
+├── README.md
+├── models/
+│   └── baselines.py
+├── retrieval/
+│   ├── retriever.py
+│   └── evidence_ranker.py
+├── knowledge_graph/
+│   └── graph_builder.py
+├── reasoning/
+│   ├── claim_extractor.py
+│   ├── claim_evidence_reasoner.py
+│   └── fusion.py
+├── explainability/
+│   ├── lime_explainer.py
+│   └── faithfulness.py
+├── llm/
+│   └── grounded_explainer.py
+├── evaluation/
+│   ├── ablation.py
+│   └── cross_dataset.py
+├── utils/
+│   ├── data_utils.py
+│   ├── metrics.py
+│   └── research_checks.py
+└── data/
+    ├── README.md
+    ├── evidence_example.csv
+    └── evidence_index_example.csv

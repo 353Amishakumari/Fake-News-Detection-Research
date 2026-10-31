@@ -1,0 +1,4 @@
+evidence_id,text,source,label
+E001,"Example evidence text that directly supports a claim.","Replace with legitimate source",SUPPORT
+E002,"Example evidence text that directly contradicts a claim.","Replace with legitimate source",CONTRADICT
+E003,"Example evidence whose relation to the claim is unknown.","Replace with legitimate source",UNKNOWN

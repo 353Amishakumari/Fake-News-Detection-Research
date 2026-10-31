@@ -1,0 +1,14 @@
+pandas>=2.2
+numpy>=1.26
+scikit-learn>=1.5
+sentence-transformers>=3.0
+networkx>=3.2
+spacy>=3.7
+lime>=0.2.0.1
+streamlit>=1.37
+joblib>=1.4
+matplotlib>=3.9
+seaborn>=0.13
+scipy>=1.13
+requests>=2.32
+openpyxl>=3.1

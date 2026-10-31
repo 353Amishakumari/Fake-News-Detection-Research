@@ -1,0 +1,2 @@
+method,recall_at_1,recall_at_5,recall_at_10,mrr,num_claims
+Semantic + Lexical Reranking,0.8904109589041096,0.9383561643835616,0.9438356164383561,0.9133561643835616,730
