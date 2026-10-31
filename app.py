@@ -174,132 +174,57 @@ def normalize_evidence(items):
 
 
 # ============================================================
+
+# ============================================================
 # CLASSIFIER
 # ============================================================
 
+import joblib
+
+CLASSIFIER_ARTIFACT = os.path.join(
+    PROJECT_ROOT,
+    "artifacts",
+    "fake_news_classifier.joblib"
+)
+
+
 @st.cache_resource(show_spinner=False)
 def load_existing_classifier():
-
     """
-    First tries to use the project's existing
-    models.baselines loader.
-
-    If that loader does not exist, returns None so that
-    the application can train/cache its own WELFake
-    TF-IDF + Logistic Regression model.
+    Load the pre-trained WELFake classifier artifact.
     """
 
-    try:
-
-        from models.baselines import load_lr_model
-
-        result = load_lr_model()
-
-        if isinstance(result, tuple):
-            return result[0], result[1]
-
-        if isinstance(result, dict):
-            return (
-                result.get("model"),
-                result.get("vectorizer")
-            )
-
-        return result, None
-
-    except Exception:
-
-        return None, None
-
-
-@st.cache_resource(show_spinner=True)
-def train_app_classifier():
-
-    """
-    Fallback classifier.
-
-    Uses the project's WELFake dataset and trains:
-
-    TF-IDF + Logistic Regression
-
-    The trained model is cached by Streamlit.
-    """
-
-    from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.linear_model import LogisticRegression
-
-    data_path = os.path.join(
-        PROJECT_ROOT,
-        "data",
-        "welfake.csv"
-    )
-
-    if not os.path.exists(data_path):
+    if not os.path.exists(CLASSIFIER_ARTIFACT):
         raise FileNotFoundError(
-            f"WELFake dataset not found:\n{data_path}"
+            f"Classifier artifact not found: {CLASSIFIER_ARTIFACT}"
         )
 
-    df = pd.read_csv(data_path)
+    bundle = joblib.load(CLASSIFIER_ARTIFACT)
 
-    required_columns = {"text", "label"}
+    model = bundle.get("model")
+    vectorizer = bundle.get("vectorizer")
 
-    if not required_columns.issubset(df.columns):
+    if model is None or vectorizer is None:
         raise ValueError(
-            "welfake.csv must contain 'text' and 'label' columns."
+            "Invalid classifier artifact: model/vectorizer missing."
         )
-
-    df = df.dropna(
-        subset=["text", "label"]
-    ).copy()
-
-    df["text"] = df["text"].astype(str)
-
-    X_text = df["text"]
-    y = df["label"].astype(int)
-
-    vectorizer = TfidfVectorizer(
-        max_features=50000,
-        ngram_range=(1, 2),
-        min_df=2,
-        sublinear_tf=True,
-    )
-
-    X = vectorizer.fit_transform(X_text)
-
-    model = LogisticRegression(
-        max_iter=1000,
-        random_state=42,
-    )
-
-    model.fit(X, y)
 
     return model, vectorizer
 
 
 def get_classifier():
-
     """
-    Uses existing project loader if available.
-
-    Otherwise trains the fallback classifier.
+    Load the exported classifier.
     """
 
     model, vectorizer = load_existing_classifier()
 
-    if (
-        model is not None
-        and vectorizer is not None
-    ):
-        return model, vectorizer, "existing"
-
-    model, vectorizer = train_app_classifier()
-
-    return model, vectorizer, "fallback"
+    return model, vectorizer, "exported_artifact"
 
 
 def predict(claim):
 
     try:
-
         model, vectorizer, source = get_classifier()
 
         X = vectorizer.transform([claim])
@@ -318,9 +243,10 @@ def predict(claim):
             else 0.0
         )
 
-        # WELFake convention used by this project:
+        # WELFake convention:
         # 0 = FAKE
         # 1 = REAL
+
         label = (
             "FAKE"
             if int(prediction_value) == 0
@@ -337,7 +263,6 @@ def predict(claim):
         )
 
     except Exception:
-
         return (
             "UNKNOWN",
             0.0,
@@ -347,6 +272,10 @@ def predict(claim):
             traceback.format_exc(),
         )
 
+
+# ============================================================
+# LIME
+# ============================================================
 
 # ============================================================
 # LIME
