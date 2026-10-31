@@ -1,0 +1,21 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+
+# Large FEVER Wikipedia dump
+data/fever/wiki-pages/
+*.zip
+
+# Model files
+*.pth
+*.pt
+*.h5
+*.pkl
+*.joblib
+
+# Generated outputs
+artifacts/
+outputs/
+*.pdf
